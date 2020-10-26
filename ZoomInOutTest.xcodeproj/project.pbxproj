@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		831361902541500100A3EE52 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8313618F2541500100A3EE52 /* AppDelegate.swift */; };
-		831361922541500100A3EE52 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 831361912541500100A3EE52 /* SceneDelegate.swift */; };
 		831361942541500100A3EE52 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 831361932541500100A3EE52 /* ViewController.swift */; };
 		831361972541500100A3EE52 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 831361952541500100A3EE52 /* Main.storyboard */; };
 		831361992541500600A3EE52 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 831361982541500600A3EE52 /* Assets.xcassets */; };
@@ -18,7 +17,6 @@
 /* Begin PBXFileReference section */
 		8313618C2541500100A3EE52 /* ZoomInOutTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZoomInOutTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8313618F2541500100A3EE52 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		831361912541500100A3EE52 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		831361932541500100A3EE52 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		831361962541500100A3EE52 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		831361982541500600A3EE52 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -57,7 +55,6 @@
 			isa = PBXGroup;
 			children = (
 				8313618F2541500100A3EE52 /* AppDelegate.swift */,
-				831361912541500100A3EE52 /* SceneDelegate.swift */,
 				831361932541500100A3EE52 /* ViewController.swift */,
 				831361952541500100A3EE52 /* Main.storyboard */,
 				831361982541500600A3EE52 /* Assets.xcassets */,
@@ -139,7 +136,6 @@
 			files = (
 				831361942541500100A3EE52 /* ViewController.swift in Sources */,
 				831361902541500100A3EE52 /* AppDelegate.swift in Sources */,
-				831361922541500100A3EE52 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -289,7 +285,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 77F6X5R2CN;
 				INFOPLIST_FILE = ZoomInOutTest/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -309,7 +305,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 77F6X5R2CN;
 				INFOPLIST_FILE = ZoomInOutTest/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

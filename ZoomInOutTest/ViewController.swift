@@ -29,40 +29,142 @@
 import UIKit
 
 enum ZoomStatus {
-    case aspectToFit
-    case aspectToFill
+    case aspectFit
+    case aspectFill
     case expanded
 }
 
 class ZoomedPhotoViewController: UIViewController {
+    
+    var hasNotch: Bool {
+        if #available(iOS 11.0, *) {
+            let bottom = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
+            return bottom > 0
+        } else {
+            return false
+        }
+         
+     }
+    
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var scrollView: UIScrollView!
-    @IBOutlet weak var imageViewBottomConstraint: NSLayoutConstraint!
-    @IBOutlet weak var imageViewLeadingConstraint: NSLayoutConstraint!
-    @IBOutlet weak var imageViewTopConstraint: NSLayoutConstraint!
-    @IBOutlet weak var imageViewTrailingConstraint: NSLayoutConstraint!
     
-    var photoName: String?
-    var zoomStatus: ZoomStatus = .aspectToFit
+    var zoomStatus: ZoomStatus = .aspectFit
     
     @IBOutlet weak var pinchAnimationView: UIView!
     override func viewDidLoad() {
-        if let photoName = photoName {
-            imageView.image = UIImage(named: photoName)
-        }
-        
         
     }
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        updateMinZoomScaleForSize(view.bounds.size)
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        imageView.transform = .identity
+        scrollView.contentInset = .zero
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        for i in 0 ..< scrollView.gestureRecognizers!.count {
+            let recognizer = scrollView.gestureRecognizers![i]
+
+            if recognizer is UIPinchGestureRecognizer {
+                recognizer.isEnabled = false
+            }
+        }
+        
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(pinch(_:)))
+
+        self.scrollView.addGestureRecognizer(pinchGesture)
+    }
+
+    @objc func pinch(_ sender: UIPinchGestureRecognizer) {
+        var safeAreaInsetX: CGFloat = 0
+        
+        if #available(iOS 11.0, *) {
+            safeAreaInsetX = view.safeAreaInsets.left
+        }
+        
+        let currentScale = self.imageView.frame.width / self.imageView.bounds.size.width
+        
+        var aspectFillScale: CGFloat = 1
+        if #available(iOS 11.0, *) {
+            aspectFillScale = self.view.frame.width / self.view.safeAreaLayoutGuide.layoutFrame.width
+        }
+        
+        print(currentScale, aspectFillScale)
+        var newScale = sender.scale
+        
+//        print(newScale)
+        
+        if currentScale * sender.scale < 1 {
+            newScale = 1 / currentScale
+        }
+        else if currentScale * sender.scale > 2 {
+            newScale = 2 / currentScale
+        }
+        else if hasNotch {
+            switch zoomStatus {
+            case .aspectFit:
+                if currentScale >= aspectFillScale {
+                    imageView.transform = .identity
+                    newScale = aspectFillScale
+                    
+                    sender.isEnabled = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        sender.isEnabled = true
+                    }
+                    
+                    zoomStatus = .aspectFill
+                }
+            case .aspectFill:
+                if aspectFillScale < currentScale {
+                    print("d")
+                    zoomStatus = .expanded
+                }
+                else if aspectFillScale > currentScale {
+                    print("g")
+                    zoomStatus = .aspectFit
+                }
+            break
+            case .expanded:
+                if currentScale < aspectFillScale {
+                    imageView.transform = .identity
+                    newScale = aspectFillScale
+                    
+                    sender.isEnabled = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        sender.isEnabled = true
+                    }
+                    
+                    zoomStatus = .aspectFill
+                    print("abvb")
+                }
+            }
+        }
+        
+        self.imageView.transform = self.imageView.transform.scaledBy(x: newScale, y: newScale)
+        sender.scale = 1
+        
+        
+        
+        let imageOriginX: CGFloat = imageView.frame.origin.x
+        
+        let superViewInset = safeAreaInsetX + imageView.frame.origin.x
+        
+        if imageOriginX > -safeAreaInsetX {
+            scrollView.contentInset = UIEdgeInsets(top: -imageView.frame.origin.y, left: -imageView.frame.origin.x + imageOriginX, bottom: imageView.frame.origin.y, right: imageView.frame.origin.x - imageOriginX)
+        }
+        else {
+            scrollView.contentInset = UIEdgeInsets(top: -imageView.frame.origin.y, left: -imageView.frame.origin.x + imageOriginX - superViewInset, bottom: imageView.frame.origin.y, right: imageView.frame.origin.x - imageOriginX - superViewInset)
+        }
+        
+        scrollView.contentSize = CGSize(width: imageView.frame.width + (imageOriginX * 2), height: imageView.frame.height)
     }
     
     
     func showPinchAnimationView() {
-//        UIDevice.vibrate()
-        
         pinchAnimationView.isHidden = false
         UIView.animate(withDuration: 0.7) { [unowned self] in
             pinchAnimationView.alpha = 1
@@ -80,88 +182,4 @@ class ZoomedPhotoViewController: UIViewController {
     
 }
 
-//MARK:- Sizing
-extension ZoomedPhotoViewController {
-    func updateMinZoomScaleForSize(_ size: CGSize) {
-        let widthScale = size.width / imageView.bounds.width
-        let heightScale = size.height / imageView.bounds.height
-        let minScale = min(widthScale, heightScale)
 
-        scrollView.minimumZoomScale = minScale
-        scrollView.zoomScale = minScale
-    }
-    
-    func updateConstraintsForSize(_ size: CGSize) {
-        let yOffset = max(0, (size.height - imageView.frame.height) / 2)
-        imageViewTopConstraint.constant = yOffset
-        imageViewBottomConstraint.constant = yOffset
-        
-        let xOffset = max(0, (size.width - imageView.frame.width) / 2)
-        imageViewLeadingConstraint.constant = xOffset
-        imageViewTrailingConstraint.constant = xOffset
-        
-        
-//        print(imageViewTopConstraint.constant)
-//        print(imageViewTrailingConstraint.constant)
-        
-        if view.frame.width < imageView.frame.width {
-            zoomStatus = .expanded
-        }
-        else {
-            zoomStatus = .aspectToFit
-        }
-        
-        
-        view.layoutIfNeeded()
-    }
-    
-    func setConstraintsForAspectToFill() {
-        imageViewTopConstraint.constant = 0
-        imageViewBottomConstraint.constant = 0
-
-        imageViewLeadingConstraint.constant = 0
-        imageViewTrailingConstraint.constant = 0
-        
-        zoomStatus = .aspectToFill
-        view.layoutIfNeeded()
-    }
-}
-
-//MARK:- UIScrollViewDelegate
-extension ZoomedPhotoViewController: UIScrollViewDelegate {
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return imageView
-    }
-    
-    func scrollViewDidZoom(_ scrollView: UIScrollView) {
-                
-        print(imageView.frame)
-        
-//        switch zoomStatus {
-//        case .aspectToFit:
-//            if view.frame.width <= imageView.frame.width {
-//                showPinchAnimationView()
-//                setConstraintsForAspectToFill()
-//                scrollView.pinchGestureRecognizer?.isEnabled = false
-//                scrollView.pinchGestureRecognizer?.isEnabled = true
-//                return
-//            }
-//        case .aspectToFill:
-//            break
-//        case .expanded:
-//            if view.frame.width >= imageView.frame.width {
-//                showPinchAnimationView()
-//                setConstraintsForAspectToFill()
-//                scrollView.pinchGestureRecognizer?.isEnabled = false
-//                scrollView.pinchGestureRecognizer?.isEnabled = true
-//                return
-//            }
-//            
-//            break
-//        }
-        
-        
-        updateConstraintsForSize(view.bounds.size)
-    }
-    
-}
