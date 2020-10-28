@@ -61,6 +61,7 @@ class ZoomedPhotoViewController: UIViewController {
         
         imageView.transform = .identity
         scrollView.contentInset = .zero
+        zoomStatus = .aspectFit
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -80,23 +81,25 @@ class ZoomedPhotoViewController: UIViewController {
     }
 
     @objc func pinch(_ sender: UIPinchGestureRecognizer) {
-        var safeAreaInsetX: CGFloat = 0
         
-        if #available(iOS 11.0, *) {
-            safeAreaInsetX = view.safeAreaInsets.left
+        if UIApplication.shared.statusBarOrientation == .portrait {
+            portraitPinchGestured(sender: sender)
         }
-        
+        else {
+            landscapePinchGestured(sender: sender)
+        }
+       
+    }
+    
+    func portraitPinchGestured(sender: UIPinchGestureRecognizer) {
         let currentScale = self.imageView.frame.width / self.imageView.bounds.size.width
         
         var aspectFillScale: CGFloat = 1
         if #available(iOS 11.0, *) {
-            aspectFillScale = self.view.frame.width / self.view.safeAreaLayoutGuide.layoutFrame.width
+            aspectFillScale = self.view.frame.height / (self.view.safeAreaLayoutGuide.layoutFrame.height - 10)
         }
         
-        print(currentScale, aspectFillScale)
         var newScale = sender.scale
-        
-//        print(newScale)
         
         if currentScale * sender.scale < 1 {
             newScale = 1 / currentScale
@@ -107,67 +110,157 @@ class ZoomedPhotoViewController: UIViewController {
         else if hasNotch {
             switch zoomStatus {
             case .aspectFit:
-                if currentScale >= aspectFillScale {
-                    imageView.transform = .identity
-                    newScale = aspectFillScale
+                if currentScale * sender.scale > aspectFillScale {
+                    newScale = aspectFillScale / currentScale
                     
-                    sender.isEnabled = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
+                        sender.isEnabled = false
                         sender.isEnabled = true
+                        self?.zoomStatus = .aspectFill
                     }
-                    
-                    zoomStatus = .aspectFill
+                    showPinchAnimationView()
                 }
             case .aspectFill:
-                if aspectFillScale < currentScale {
-                    print("d")
+                if currentScale * sender.scale > aspectFillScale {
                     zoomStatus = .expanded
                 }
-                else if aspectFillScale > currentScale {
-                    print("g")
+                else {
                     zoomStatus = .aspectFit
                 }
-            break
             case .expanded:
-                if currentScale < aspectFillScale {
-                    imageView.transform = .identity
-                    newScale = aspectFillScale
+                if currentScale * sender.scale < aspectFillScale {
+                    newScale = aspectFillScale / currentScale
                     
-                    sender.isEnabled = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
+                        sender.isEnabled = false
                         sender.isEnabled = true
+                        self?.zoomStatus = .aspectFill
                     }
-                    
-                    zoomStatus = .aspectFill
-                    print("abvb")
+                    showPinchAnimationView()
                 }
+
             }
         }
-        
+            
         self.imageView.transform = self.imageView.transform.scaledBy(x: newScale, y: newScale)
         sender.scale = 1
         
+        let imageOriginY: CGFloat = imageView.frame.origin.y
         
+        print(imageOriginY)
         
-        let imageOriginX: CGFloat = imageView.frame.origin.x
+        var safeAreaInsetTop: CGFloat = 0
+        var safeAreaInsetBottom: CGFloat = 0
         
-        let superViewInset = safeAreaInsetX + imageView.frame.origin.x
+        if #available(iOS 11.0, *) {
+            safeAreaInsetTop = view.safeAreaInsets.top
+            safeAreaInsetBottom = view.safeAreaInsets.bottom
+        }
         
-        if imageOriginX > -safeAreaInsetX {
-            scrollView.contentInset = UIEdgeInsets(top: -imageView.frame.origin.y, left: -imageView.frame.origin.x + imageOriginX, bottom: imageView.frame.origin.y, right: imageView.frame.origin.x - imageOriginX)
+        let superViewInset = safeAreaInsetTop + imageView.frame.origin.y
+        
+        if imageOriginY > -safeAreaInsetTop {
+            scrollView.contentInset = UIEdgeInsets(top: -imageView.frame.origin.y + imageOriginY, left: -imageView.frame.origin.x, bottom: imageView.frame.origin.y - imageOriginY, right: imageView.frame.origin.x)
         }
         else {
-            scrollView.contentInset = UIEdgeInsets(top: -imageView.frame.origin.y, left: -imageView.frame.origin.x + imageOriginX - superViewInset, bottom: imageView.frame.origin.y, right: imageView.frame.origin.x - imageOriginX - superViewInset)
+            scrollView.contentInset = UIEdgeInsets(top: -imageView.frame.origin.y  + imageOriginY - superViewInset, left: -imageView.frame.origin.x, bottom: imageView.frame.origin.y  - imageOriginY - superViewInset, right: imageView.frame.origin.x)
         }
         
-        scrollView.contentSize = CGSize(width: imageView.frame.width + (imageOriginX * 2), height: imageView.frame.height)
+        scrollView.contentSize = CGSize(width: imageView.frame.width, height: imageView.frame.height  + (imageOriginY * 2))
     }
+    
+    func landscapePinchGestured(sender: UIPinchGestureRecognizer) {
+        let currentScale = self.imageView.frame.width / self.imageView.bounds.size.width
+        
+        var aspectFillScale: CGFloat = 1
+        if #available(iOS 11.0, *) {
+            aspectFillScale = self.view.frame.width / self.view.safeAreaLayoutGuide.layoutFrame.width
+        }
+        
+        var newScale = sender.scale
+        
+        print(currentScale)
+        
+        if currentScale * sender.scale < 1 {
+            newScale = 1 / currentScale
+        }
+        else if currentScale * sender.scale > 2 {
+            newScale = 2 / currentScale
+        }
+        else if hasNotch {
+            switch zoomStatus {
+            case .aspectFit:
+                if currentScale * sender.scale > aspectFillScale {
+                    newScale = aspectFillScale / currentScale
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
+                        sender.isEnabled = false
+                        sender.isEnabled = true
+                        self?.zoomStatus = .aspectFill
+                    }
+                    showPinchAnimationView()
+                }
+            case .aspectFill:
+                if currentScale * sender.scale > aspectFillScale {
+                    zoomStatus = .expanded
+                }
+                else {
+                    zoomStatus = .aspectFit
+                }
+            case .expanded:
+                if currentScale * sender.scale < aspectFillScale {
+                    newScale = aspectFillScale / currentScale
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
+                        sender.isEnabled = false
+                        sender.isEnabled = true
+                        self?.zoomStatus = .aspectFill
+                    }
+                    showPinchAnimationView()
+                }
+
+            }
+        }
+            
+        self.imageView.transform = self.imageView.transform.scaledBy(x: newScale, y: newScale)
+        sender.scale = 1
+                
+        var safeAreaInsetLeft: CGFloat = 0
+        var safeAreaInsetRight: CGFloat = 0
+        
+        if #available(iOS 11.0, *) {
+            safeAreaInsetLeft = view.safeAreaInsets.left
+            safeAreaInsetRight = view.safeAreaInsets.right
+        }
+        
+        let imageLeftInset: CGFloat = imageView.frame.origin.x
+        let imageRightInset: CGFloat = imageView.frame.origin.x
+
+        print(imageLeftInset , imageRightInset)
+
+        
+        let superViewInset = safeAreaInsetLeft + imageView.frame.origin.x
+        
+        if imageLeftInset > -safeAreaInsetLeft {
+            scrollView.contentInset = UIEdgeInsets(top: -imageView.frame.origin.y, left: -imageView.frame.origin.x + imageLeftInset, bottom: imageView.frame.origin.y, right: imageView.frame.origin.x - imageLeftInset)
+        }
+        else {
+            scrollView.contentInset = UIEdgeInsets(top: -imageView.frame.origin.y, left: -imageView.frame.origin.x + imageLeftInset - superViewInset, bottom: imageView.frame.origin.y, right: imageView.frame.origin.x - imageLeftInset - superViewInset)
+        }
+        
+        scrollView.contentSize = CGSize(width: imageView.frame.width + (imageLeftInset * 2), height: imageView.frame.height)
+    }
+    
+    
+    
+    
+    
     
     
     func showPinchAnimationView() {
         pinchAnimationView.isHidden = false
-        UIView.animate(withDuration: 0.7) { [unowned self] in
-            pinchAnimationView.alpha = 1
+        UIView.animate(withDuration: 0.2) { [unowned self] in
+            pinchAnimationView.alpha = 0.7
             pinchAnimationView.layoutIfNeeded()
         } completion: { (completion) in
             UIView.animate(withDuration: 0.1) { [unowned self] in

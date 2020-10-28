@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="b8l-85-ZEo">
-    <device id="retina6_5" orientation="landscape" appearance="light"/>
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
@@ -14,14 +14,14 @@
             <objects>
                 <viewController storyboardIdentifier="PhotoViewController" modalPresentationStyle="fullScreen" id="b8l-85-ZEo" customClass="ZoomedPhotoViewController" customModule="ZoomInOutTest" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" clipsSubviews="YES" contentMode="scaleToFill" id="TQz-uP-zha">
-                        <rect key="frame" x="0.0" y="0.0" width="896" height="414"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" contentInsetAdjustmentBehavior="never" canCancelContentTouches="NO" bouncesZoom="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vcp-Tq-D9s">
-                                <rect key="frame" x="44" y="0.0" width="808" height="414"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="newspaper.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="Jxm-Bb-Wxw">
-                                        <rect key="frame" x="0.0" y="0.33333333333334281" width="808" height="413.66666666666669"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="818"/>
                                         <color key="backgroundColor" systemColor="systemGreenColor"/>
                                         <color key="tintColor" systemColor="systemTealColor"/>
                                     </imageView>
@@ -41,31 +41,31 @@
                                 </connections>
                             </scrollView>
                             <view hidden="YES" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8DN-92-1Rb">
-                                <rect key="frame" x="0.0" y="0.0" width="896" height="414"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sep-ov-pPd">
-                                        <rect key="frame" x="0.0" y="0.0" width="896" height="30"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="30"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="dgj-8V-9tk"/>
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="t0O-tq-xuH">
-                                        <rect key="frame" x="0.0" y="0.0" width="30" height="414"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="30" height="896"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="30" id="Vep-sC-3OC"/>
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Em0-89-rXk">
-                                        <rect key="frame" x="0.0" y="384" width="896" height="30"/>
+                                        <rect key="frame" x="0.0" y="866" width="414" height="30"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="zoV-Ao-SZc"/>
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wgP-kL-F97">
-                                        <rect key="frame" x="866" y="0.0" width="30" height="414"/>
+                                        <rect key="frame" x="384" y="0.0" width="30" height="896"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="30" id="bUk-Ss-PUC"/>
@@ -93,14 +93,28 @@
                         <color key="backgroundColor" systemColor="systemYellowColor"/>
                         <constraints>
                             <constraint firstItem="vcp-Tq-D9s" firstAttribute="leading" secondItem="CA5-sZ-KmM" secondAttribute="leading" id="57Y-bL-rnh"/>
-                            <constraint firstAttribute="bottom" secondItem="vcp-Tq-D9s" secondAttribute="bottom" id="60R-WI-C2S"/>
+                            <constraint firstItem="CA5-sZ-KmM" firstAttribute="bottom" secondItem="vcp-Tq-D9s" secondAttribute="bottom" id="60R-WI-C2S"/>
                             <constraint firstAttribute="bottom" secondItem="8DN-92-1Rb" secondAttribute="bottom" id="Sid-kt-jj7"/>
-                            <constraint firstItem="vcp-Tq-D9s" firstAttribute="top" secondItem="TQz-uP-zha" secondAttribute="top" id="cro-YU-jS1"/>
+                            <constraint firstItem="vcp-Tq-D9s" firstAttribute="top" secondItem="CA5-sZ-KmM" secondAttribute="top" id="cro-YU-jS1"/>
                             <constraint firstAttribute="trailing" secondItem="8DN-92-1Rb" secondAttribute="trailing" id="hAH-Rj-aEP"/>
                             <constraint firstItem="8DN-92-1Rb" firstAttribute="leading" secondItem="TQz-uP-zha" secondAttribute="leading" id="mlf-uz-3D2"/>
+                            <constraint firstAttribute="bottom" secondItem="vcp-Tq-D9s" secondAttribute="bottom" id="qBX-IX-1c0">
+                                <variation key="heightClass=compact" constant="0.0"/>
+                            </constraint>
                             <constraint firstItem="8DN-92-1Rb" firstAttribute="top" secondItem="TQz-uP-zha" secondAttribute="top" id="qPO-uD-lcH"/>
                             <constraint firstItem="CA5-sZ-KmM" firstAttribute="trailing" secondItem="vcp-Tq-D9s" secondAttribute="trailing" id="wE0-kt-ZGG"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="qBX-IX-1c0"/>
+                            </mask>
+                        </variation>
+                        <variation key="heightClass=compact">
+                            <mask key="constraints">
+                                <exclude reference="60R-WI-C2S"/>
+                                <include reference="qBX-IX-1c0"/>
+                            </mask>
+                        </variation>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <connections>
